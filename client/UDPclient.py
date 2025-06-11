@@ -1,5 +1,11 @@
 import socket
 import sys
+
+def sendAndReceive(packet, socket, server_address):
+    timeout = 20
+    
+
+
 def main():
     if len(sys.argv) != 4:
        print("The command you input is invalid!")
