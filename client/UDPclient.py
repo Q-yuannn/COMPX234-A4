@@ -12,4 +12,8 @@ def main():
     # the namelist file is in the last folder
     with open(f'../{filename}.txt', 'r') as file:
          # create datagram socket(UDP)
-         datagram_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        datagram_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        for line in file:
+            file_name = line.strip()
+            download_message = f"DOWNLOAD <{file_name}>"
+            download_mes_packet = download_message.encode()
