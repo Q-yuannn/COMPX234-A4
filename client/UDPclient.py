@@ -37,8 +37,26 @@ def main():
     # the namelist file is in the last folder
     with open(f'../{filename}.txt', 'r') as file:
          # create datagram socket(UDP)
-        datagram_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        for line in file:
-            file_name = line.strip()
-            download_message = f"DOWNLOAD <{file_name}>"
-            download_mes_packet = download_message.encode()
+         datagram_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+         for line in file:
+             file_name = line.strip()
+             download_message = f"DOWNLOAD <{file_name}>"
+             download_mes_packet = download_message.encode()
+             response = sendAndReceive(download_mes_packet, datagram_socket, server_address=51234)
+             if response == None:
+                print(f"The file{file_name} Not found")
+                return
+             # receive the OK response OK <filename> SIZE <size_bytes> PORT <port_number>
+             else :
+                # divide the response
+                response_parts = response.strip().split
+                size_index = response_parts.index("SIZE")
+                port_index = response_parts.index("PORT")
+                file_size = int(response_parts[size_index + 1])
+                data_port = int(response_parts[port_index + 1])
+                  
+
+                 
+                 
+
+                 
