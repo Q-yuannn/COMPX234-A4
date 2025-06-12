@@ -16,3 +16,14 @@ def main():
      hostname = "WangQiyuan"
      # bind host and port
      server_socket.bind((hostname, port))
+     while True:
+           request, client_address = server_socket.recvfrom(1024)
+           request_parts = request.decode().strip().split()
+
+           if len(request_parts) == 2 and request_parts[0] == "DOWNLOAD":
+              filename = request_parts[1]
+              threading.Thread(target=handle_client, args=(filename, client_address, server_socket)).start()
+           else:
+              print(f"Invalid request from {client_address}")
+       
+
