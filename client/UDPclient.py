@@ -1,6 +1,7 @@
 import socket
 import sys
 import time
+import os
 
 def sendAndReceive(packet, socket, server_address):
     timeout = 100
@@ -13,19 +14,15 @@ def sendAndReceive(packet, socket, server_address):
             socket.sendto(packet, server_address)
             # receieve response
             response, server_address = socket.recvfrom(1024)
-            print(f"receive{server_address} ")
+            print(f"{response} received from {server_address} ")
             return response.decode('utf-8')
         
         # if timeout
         except socket.timeout:
             try_time += 1
-            print(f"waiting exceed time ({timeout}s), last try times: {timeout - try_time}")
-            if try_time < timeout:
-                time.sleep(0.5)
-                
-        except Exception as e:
-            print(e)
-            break
+            print(f"Timeout!")
+            timeout += timeout
+            return None
 
 
 def main():
