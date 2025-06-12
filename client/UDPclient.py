@@ -97,6 +97,9 @@ def main():
                         print(f":{file_name} transmission completed")
          # after writing, close the socket
          datagram_socket.close()
+
+if __name__ == "__main__":
+    main()
                          
                          
 
