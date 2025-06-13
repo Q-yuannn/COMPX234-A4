@@ -4,18 +4,18 @@ import time
 import os
 import base64
 
-def sendAndReceive(packet, socket, server_address,port):
+def sendAndReceive(packet, sock, server_address,port):
     timeout = 100
     try_time = 0
     maxtry_time = 30
     while try_time < maxtry_time:
         try:
-            socket.settimeout(timeout)
+            sock.settimeout(timeout)
             # send message
-            socket.sendto(packet, (server_address,port))
+            sock.sendto(packet, (server_address,int(port)))
             # receieve response
-            response, server_address = socket.recvfrom(1024)
-            print(f"{response} received from {server_address} ")
+            response, server_address = sock.recvfrom(3072)
+            # print(f"{response} received from {server_address} ")
             return response.decode('utf-8')
         
         # if timeout
@@ -23,6 +23,10 @@ def sendAndReceive(packet, socket, server_address,port):
             try_time += 1
             print(f"Timeout!")
             timeout += timeout
+            return None
+        
+        except Exception as e:
+            print(f"Error: {e}")
             return None
 
 
@@ -33,18 +37,18 @@ def main():
        print("The command you input is invalid!")
        sys.exit(1)
     # extract the arguments    
-    hostname = sys.argv[0]
-    portname = sys.argv[1]
-    list_filename = sys.argv[2]
+    hostname = sys.argv[1]
+    portname = sys.argv[2]
+    list_filename = sys.argv[3]
     # try to open namelist file
     # the namelist file is in the last folder
-    with open(f'../{list_filename}.txt', 'r') as file:
+    with open(f'{list_filename}', 'r') as file:
          # create datagram socket(UDP)
          datagram_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
          # open the file name list
          for line in file:
              file_name = line.strip()
-             download_message = f"DOWNLOAD <{file_name}>"
+             download_message = f"DOWNLOAD {file_name}"
              download_mes_packet = download_message.encode()
              # send download request and handle response
              response = sendAndReceive(download_mes_packet, datagram_socket, hostname, portname)
@@ -53,7 +57,7 @@ def main():
                 return
              else :
                 # divide the response
-                response_parts = response.strip().split
+                response_parts = response.strip().split()
                 if response_parts[0] == "ERR":
                    print(f"The file{file_name} Not found")
                    return
@@ -70,8 +74,8 @@ def main():
                          end = min(downloaded + Max_message_size, file_size-1)
                          # send write bytes request and handle response
                          request_message = f"FILE {file_name} GET START {downloaded} END {end}"
-                         write_response = sendAndReceive(datagram_socket, request_message, hostname,data_port)
-                         if response == None:
+                         write_response = sendAndReceive(request_message.encode(), datagram_socket, hostname,data_port)
+                         if write_response == None:
                              print(f"Unsuccessfully receive data{downloaded} - {end}")
                              return
                          # when reponse is not None, check response
@@ -86,11 +90,15 @@ def main():
                          f.seek(downloaded)
                          f.write(data)
                          downloaded += len(data)
-                         print("*", end="", flush=True)
+                     percent = int((downloaded / file_size) * 100)
+                     # display the progress
+                     print(f"\rDownloading {file_name}: {percent}% [{downloaded}/{file_size} bytes]", end="", flush=True)
+
+
                      # after writing, send close request to the server
                      close_request = f"FILE {file_name} CLOSE"
                      # handle response
-                     response = sendAndReceive(datagram_socket, close_request, hostname, data_port)
+                     response = sendAndReceive(close_request.encode(), datagram_socket, hostname, data_port)
                      if response == None or "CLOSE_OK" not in response:
                         print(f"No right response from {file_name}")
                      else:

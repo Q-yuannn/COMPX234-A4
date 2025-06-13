@@ -1,3 +1,4 @@
+
 import sys
 import socket
 import threading
@@ -30,14 +31,14 @@ def handle_client_request(filename, client_address, server_socket, hostname):
         with open(filename, "rb") as f:
             while True:
                 # receive the requested data
-                request_data, address = data_socket.recvfrom(2048)
+                request_data, address = data_socket.recvfrom(3072)
                 request = request_data.decode().strip()
                 request_parts = request.split()
                 # invalid
-                if request_data[1] != filename:
+                if request_parts[1] != filename:
                     continue
                 # if request is close
-                if request_parts[2] == "CLOSE":
+                if len(request_parts) >= 3 and request_parts[2] == "CLOSE":
                     close_msg = f"FILE {filename} CLOSE_OK"
                     # use new socket to send close message to client
                     data_socket.sendto(close_msg.encode(), address)
@@ -67,20 +68,25 @@ def main():
      if len(sys.argv) != 2:
         print("Please input valid command")
         return
+     print("Server is starting...")
      # if the command is valid
      port = int(sys.argv[1])
      # UDP socket
      server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-     hostname = "WangQiyuan"
+     hostname = 'localhost'
      # bind host and port
      server_socket.bind((hostname, port))
+     print(f"Server is running on {hostname}:{port}")
      while True:
-           request, client_address = server_socket.recvfrom(1024)
+           # receive request from client
+           request, client_address = server_socket.recvfrom(3072)
            request_parts = request.decode().strip().split()
-
+           # if the request is valid
            if len(request_parts) == 2 and request_parts[0] == "DOWNLOAD":
+              # extract the file name from request
               file_name = request_parts[1]
-              threading.Thread(target=handle_client_request, args=(file_name, client_address, server_socket)).start()
+              # create a new thread to handle the client request
+              threading.Thread(target=handle_client_request, args=(file_name, client_address, server_socket,hostname)).start()
            else:
               print(f"Invalid request from {client_address}")
 
