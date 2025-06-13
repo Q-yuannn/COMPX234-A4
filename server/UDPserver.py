@@ -57,7 +57,6 @@ def handle_client_request(filename, client_address, server_socket, hostname):
                     response = f"FILE {filename} OK START {start} END {end} DATA {encoded}"
                     data_socket.sendto(response.encode(), address)
         data_socket.close()
-        print(f"handle client requests finished")
 
     except Exception as e:
         print(f"Error: {e}")
