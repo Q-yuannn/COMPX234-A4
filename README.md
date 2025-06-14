@@ -59,8 +59,14 @@ Server and client must use the matching protocol format.
 
 ## Example Output
 
-Downloading test1.png: 100% [977633/977633 bytes]:test1.png transmission completed
+Downloading: |**************************************************| 100% [977633/977633 bytes]
 
-Downloading test2.pptx: 100% [22890377/22890377 bytes]:test2.pptx transmission completed
+:test1.png transmission completed
 
-Downloading test3.txt: 100% [23/23 bytes]:test3.txt transmission complete
+Downloading: |**************************************************| 100% [22890377/22890377 bytes]
+
+:test2.pptx transmission completed
+
+Downloading: |**************************************************| 100% [23/23 bytes]
+
+:test3.txt transmission completed
