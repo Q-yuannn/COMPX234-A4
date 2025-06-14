@@ -29,6 +29,12 @@ def sendAndReceive(packet, sock, server_address,port):
             print(f"Error: {e}")
             return None
 
+def print_progress_bar(downloaded, total, bar_length=50):
+    percent = downloaded / total
+    filled_length = int(bar_length * percent)
+    bar = '*' * filled_length + '-' * (bar_length - filled_length)
+    print(f'\rDownloading: |{bar}| {int(percent * 100)}% [{downloaded}/{total} bytes]', end='', flush=True)
+
 
 def main():
     
@@ -90,9 +96,13 @@ def main():
                          f.seek(downloaded)
                          f.write(data)
                          downloaded += len(data)
-                     percent = int((downloaded / file_size) * 100)
+                         print_progress_bar(downloaded, file_size)
+                     #percent = int((downloaded / file_size) * 100)
                      # display the progress
-                     print(f"\rDownloading {file_name}: {percent}% [{downloaded}/{file_size} bytes]", end="", flush=True)
+                     #print(f"\rDownloading {file_name}: {percent}% [{downloaded}/{file_size} bytes]", end="", flush=True)
+                     print()  # 换行
+                     print(f"{file_name} transmission completed")
+
 
 
                      # after writing, send close request to the server
