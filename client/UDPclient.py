@@ -100,7 +100,7 @@ def main():
                      #percent = int((downloaded / file_size) * 100)
                      # display the progress
                      #print(f"\rDownloading {file_name}: {percent}% [{downloaded}/{file_size} bytes]", end="", flush=True)
-                     print()  # 换行
+                     print()  
                      #print(f"{file_name} transmission completed")
 
 
